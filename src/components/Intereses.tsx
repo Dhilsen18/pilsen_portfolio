@@ -23,7 +23,7 @@ const Intereses: React.FC = () => {
 
   // Crear un ícono Leaflet personalizado para tu emoji avatar
   const customIcon = L.divIcon({
-    html: '<div class="relative w-24 h-24 rounded-full flex items-center justify-center bg-white opacity-90 shadow-lg glow-effect"><img src="/images/emoji_avatar2.png" class="w-22 h-22 object-contain rounded-full" alt="Avatar"/></div>', // Aumentado el tamaño del div a w-24 h-24 y la imagen a w-22 h-22
+    html: `<div class="relative w-24 h-24 rounded-full flex items-center justify-center bg-white opacity-90 shadow-lg glow-effect"><img src="${import.meta.env.BASE_URL}images/emoji_avatar2.png" class="w-22 h-22 object-contain rounded-full" alt="Avatar"/></div>`, // Aumentado el tamaño del div a w-24 h-24 y la imagen a w-22 h-22
     className: 'custom-leaflet-icon',
     iconSize: [96, 96], // Ajustado el tamaño del icono para que coincida con el div
     iconAnchor: [48, 96], // Ajustado el ancla
