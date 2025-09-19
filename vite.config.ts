@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/postcss' // Importar el plugin de PostCSS 
 import autoprefixer from 'autoprefixer' // Importar autoprefixer
 
 export default defineConfig({
+  base: '/portfolio-dhilsenmmv/', // Añadir la ruta base para GitHub Pages
   plugins: [
     react(),
   ],
