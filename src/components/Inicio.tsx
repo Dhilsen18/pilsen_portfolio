@@ -22,7 +22,7 @@ const Inicio: React.FC = () => {
           className="relative w-48 h-48 mb-8 flex items-center justify-center overflow-hidden" /* Eliminado fondo, glow-effect, y centrado */
         >
           <img
-            src="/images/emoji_avatar.png" // Ruta actualizada para Vite
+            src={import.meta.env.BASE_URL + 'images/emoji_avatar.png'} // Ruta actualizada para Vite con BASE_URL
             alt="Emoji Avatar"
             className="w-full h-full object-contain" /* Revertido a object-contain */
           />
