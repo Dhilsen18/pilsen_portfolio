@@ -1,112 +1,143 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'; // Importar motion de framer-motion
-import { FiMenu, FiX, FiUser } from 'react-icons/fi'; // Importar iconos de menú, cerrar y usuario
+import { FiMenu, FiX, FiSun, FiMoon } from 'react-icons/fi'; // Importar iconos de menú, cerrar, sol y luna
 
-const Navbar: React.FC = () => {
-  const [activeLink, setActiveLink] = useState<string | null>('inicio'); // Estado para el enlace activo, inicialmente 'inicio'
+interface NavbarProps {
+  toggleTheme: () => void;
+  currentTheme: string;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ toggleTheme, currentTheme }) => {
+  const [activeLink, setActiveLink] = useState<string>('inicio'); // Estado para el enlace activo, inicializado en 'inicio'
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Estado para el menú móvil
-  const [scrolled, setScrolled] = useState(false); // Nuevo estado para detectar el scroll
-
+  const [hasScrolled, setHasScrolled] = useState(false); // Nuevo estado para detectar si se ha hecho scroll
+  
+  const getInactiveLinkClasses = (isMobile: boolean) => {
+    const baseClasses = isMobile ? 'px-4 py-3 rounded-lg' : 'px-4 py-2 rounded-full';
+    if (currentTheme === 'light') {
+      return `${baseClasses} border-transparent text-gray-900 hover:text-gray-900 ${isMobile ? 'hover:bg-gray-200' : ''}`;
+    } else {
+      return `${baseClasses} border-transparent text-white hover:text-white ${isMobile ? 'dark:hover:bg-gray-700' : ''}`;
+    }
+  };
+  
+  const getActiveLinkClasses = (isMobile: boolean) => {
+    const baseClasses = isMobile ? 'px-4 py-3 rounded-lg' : 'px-4 py-2 rounded-full';
+    if (currentTheme === 'light') {
+      return `${baseClasses} border-emerald-600 text-gray-900` + (isMobile ? ' bg-transparent' : ''); // Borde verde esmeralda para modo claro
+    } else {
+      return `${baseClasses} border-emerald-400 text-white` + (isMobile ? ' bg-transparent' : ''); // Borde verde esmeralda para modo oscuro
+    }
+  };
+  
   const handleLinkClick = (linkId: string) => {
     setActiveLink(linkId);
+    setIsMobileMenuOpen(false); // Cerrar el menú móvil al seleccionar un enlace
   };
 
+  // Nuevo useEffect para manejar el desplazamiento y actualizar el enlace activo
   useEffect(() => {
-    const sections = [
-      { id: 'inicio' },
-      { id: 'educacion' },
-      { id: 'competencia' },
-      { id: 'experiencia' },
-      { id: 'proyectos' },
-    ];
-    const navbarHeight = 64; // Altura aproximada de tu Navbar, ajusta si es necesario
+    const scrollOffset = 80; // Altura de la barra de navegación o un offset para la detección
 
-    const handleScroll = () => {
-      let currentActiveLink: string | null = null;
-      let closestTop = Infinity; // Para encontrar la sección más cercana a la parte superior
-
-      // Actualizar el estado de scroll
-      setScrolled(window.scrollY > 50); // Si se ha desplazado más de 50px
-
-      sections.forEach((section) => {
-        const element = document.getElementById(section.id);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          const top = rect.top + window.scrollY; // Posición absoluta del inicio de la sección
-          const bottom = rect.bottom + window.scrollY; // Posición absoluta del final de la sección
-
-          const viewportTop = window.scrollY + navbarHeight; // Parte superior del viewport ajustada por el navbar
-          const viewportBottom = window.scrollY + window.innerHeight; // Parte inferior del viewport
-
-          // Verificar si la sección está al menos parcialmente visible dentro del viewport, sin contar el navbar
-          if (bottom > viewportTop && top < viewportBottom) {
-            // Si esta sección está más cerca de la parte superior del viewport (justo debajo del navbar)
-            if (top < closestTop) {
-              closestTop = top;
-              currentActiveLink = section.id;
-            }
-          }
-        }
-      });
-
-      if (currentActiveLink) {
-        setActiveLink(currentActiveLink);
-      }
-    };
-
-    // Debounce para optimizar el evento scroll
-    const debounce = (func: Function, delay: number) => {
-      let timeout: ReturnType<typeof setTimeout>;
-      return (...args: any[]) => {
+    // Función de debounce
+    const debounce = (func: (...args: any[]) => void, delay: number) => {
+      let timeout: NodeJS.Timeout;
+      return function(this: any, ...args: any[]) {
+        const context = this;
         clearTimeout(timeout);
-        timeout = setTimeout(() => func(...args), delay);
+        timeout = setTimeout(() => func.apply(context, args), delay);
       };
     };
 
-    const debouncedHandleScroll = debounce(handleScroll, 100); // 100ms de retardo
+    const handleScroll = () => {
+      const sections = ['inicio', 'educacion', 'competencia', 'experiencia', 'proyectos'];
+      let currentActiveLink = 'inicio';
+
+      // Iterar secciones de arriba hacia abajo
+      for (let i = 0; i < sections.length; i++) {
+        const sectionId = sections[i];
+        const section = document.getElementById(sectionId);
+        if (section) {
+          const rect = section.getBoundingClientRect();
+          // Una sección es activa si su parte superior está en o por encima del scrollOffset
+          // y la parte superior de la *siguiente* sección (si existe) aún no ha llegado a ese offset
+          const nextSection = document.getElementById(sections[i + 1]);
+          const nextRectTop = nextSection ? nextSection.getBoundingClientRect().top : Infinity; // Si no hay siguiente, consideramos infinito
+
+          if (rect.top <= scrollOffset && nextRectTop > scrollOffset) {
+            currentActiveLink = sectionId;
+            break; // Encontramos la sección activa, salimos
+          }
+        }
+      }
+
+      // Si estamos muy al inicio de la página, asegurar que 'inicio' esté activo
+      if (window.scrollY === 0) {
+        currentActiveLink = 'inicio';
+      }
+      setHasScrolled(window.scrollY > 0); // Actualizar el estado hasScrolled
+
+      setActiveLink(currentActiveLink);
+    };
+
+    const debouncedHandleScroll = debounce(handleScroll, 100);
 
     window.addEventListener('scroll', debouncedHandleScroll);
-    handleScroll(); // Ejecutar una vez al montar para establecer el estado inicial
+    debouncedHandleScroll(); // Ejecutar una vez al montar para establecer el enlace activo inicial
 
     return () => {
       window.removeEventListener('scroll', debouncedHandleScroll);
     };
-  }, []); // El array de dependencias vacío asegura que el efecto se ejecute solo una vez al montar
+  }, []); // El array vacío asegura que el efecto se ejecute una sola vez al montar
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 p-4 bg-transparent transition-colors duration-300 md:bg-transparent"> {/* Fondo transparente para móvil y desktop */}
+    <nav className="fixed top-0 left-0 w-full z-50 p-4 bg-transparent transition-colors duration-300"> {/* Fondo transparente para móvil y desktop */}
       <div className="max-w-screen-lg mx-auto flex items-center justify-between">
-        {/* Portfolio - Izquierda */}
-        <a href="#inicio" className="text-white text-2xl font-bold">Portfolio</a>
+        {/* Portfolio - Siempre visible en todos los modos */}
+        <a href="#inicio" className="text-current text-2xl font-bold">Portfolio</a>
 
-        {/* Botón de Menú Móvil / Hamburguesa (Se elimina el botón de tema) */}
-        <div className="flex items-center md:hidden z-50"> {/* Añadido z-50 */}
+        {/* Contenedor para botones de móvil: se vuelve semi-transparente al hacer scroll */}
+        <motion.div
+          className="flex items-center md:hidden z-50 transition-colors duration-300 bg-transparent p-0"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 1 }}
+        >
+          {/* Botón de Tema (Sol/Luna) para Móvil */}
+          <motion.button
+            onClick={toggleTheme}
+            className="p-2 rounded-full text-current hover:text-gray-900 dark:hover:text-white transition-colors duration-200 focus:outline-none mr-2"
+            whileHover={{ scale: 1.1, backgroundColor: "transparent" }}
+            whileTap={{ scale: 0.9, backgroundColor: "transparent" }}
+          >
+            {currentTheme === 'dark' ? <FiSun size={24} /> : <FiMoon size={24} />} {/* Icono de sol/luna */}
+          </motion.button>
+          {/* Botón de Menú Móvil / Hamburguesa */}
           <motion.button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-indigo-700 transition-colors duration-200 focus:outline-none"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            className="p-2 rounded-full text-current hover:text-gray-900 dark:hover:text-white transition-colors duration-200 focus:outline-none ml-2"
+            whileHover={{ scale: 1.1, backgroundColor: "transparent" }}
+            whileTap={{ scale: 0.9, backgroundColor: "transparent" }}
           >
             {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
           </motion.button>
-        </div>
+        </motion.div>
 
         {/* Enlaces de Navegación - Centrados con fondo animado (Desktop) */}
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="hidden md:flex bg-transparent backdrop-filter backdrop-blur-lg rounded-full p-2 items-center space-x-2 shadow-lg mx-auto"> {/* Centrar con mx-auto, cambiado a bg-transparent */}
+          className="hidden md:flex items-center space-x-6 mx-auto bg-white/10 dark:bg-gray-800/20 backdrop-filter backdrop-blur-lg rounded-full p-3 shadow-lg"> {/* Fondo semi-transparente, blur, redondeado y con sombra */}
           
           <motion.a
             href="#inicio"
             onClick={() => handleLinkClick('inicio')}
-            className={`px-4 py-2 rounded-full flex items-center justify-center
-                        ${activeLink === 'inicio'
-                          ? 'bg-[rgba(32,32,64,0.7)] text-white shadow-md border border-indigo-500'
-                          : 'text-gray-200 hover:bg-[rgba(48,48,80,0.6)] hover:text-white hover:shadow-md'
-                        }`}
-            whileHover={{ scale: 1.05, boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)" }}
+            className={`flex items-center justify-center border-2
+                        ${activeLink === 'inicio' 
+                          ? getActiveLinkClasses(false) 
+                          : getInactiveLinkClasses(false)}
+                        `}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             animate={{ rotate: 0 }}
           >
@@ -116,12 +147,12 @@ const Navbar: React.FC = () => {
           <motion.a
             href="#educacion"
             onClick={() => handleLinkClick('educacion')}
-            className={`px-4 py-2 rounded-full flex items-center justify-center
-                        ${activeLink === 'educacion'
-                          ? 'bg-[rgba(32,32,64,0.7)] text-white shadow-md border border-indigo-500'
-                          : 'text-gray-200 hover:bg-[rgba(48,48,80,0.6)] hover:text-white hover:shadow-md'
-                        }`}
-            whileHover={{ scale: 1.05, boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)" }}
+            className={`flex items-center justify-center border-2
+                        ${activeLink === 'educacion' 
+                          ? getActiveLinkClasses(false) 
+                          : getInactiveLinkClasses(false)}
+                        `}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             animate={{ rotate: 0 }}
           >
@@ -131,12 +162,12 @@ const Navbar: React.FC = () => {
           <motion.a
             href="#competencia"
             onClick={() => handleLinkClick('competencia')}
-            className={`px-4 py-2 rounded-full flex items-center justify-center
-                        ${activeLink === 'competencia'
-                          ? 'bg-[rgba(32,32,64,0.7)] text-white shadow-md border border-indigo-500'
-                          : 'text-gray-200 hover:bg-[rgba(48,48,80,0.6)] hover:text-white hover:shadow-md'
-                        }`}
-            whileHover={{ scale: 1.05, boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)" }}
+            className={`flex items-center justify-center border-2
+                        ${activeLink === 'competencia' 
+                          ? getActiveLinkClasses(false) 
+                          : getInactiveLinkClasses(false)}
+                        `}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             animate={{ rotate: 0 }}
           >
@@ -146,12 +177,12 @@ const Navbar: React.FC = () => {
           <motion.a
             href="#experiencia"
             onClick={() => handleLinkClick('experiencia')}
-            className={`px-4 py-2 rounded-full flex items-center justify-center
-                        ${activeLink === 'experiencia'
-                          ? 'bg-[rgba(32,32,64,0.7)] text-white shadow-md border border-indigo-500'
-                          : 'text-gray-200 hover:bg-[rgba(48,48,80,0.6)] hover:text-white hover:shadow-md'
-                        }`}
-            whileHover={{ scale: 1.05, boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)" }}
+            className={`flex items-center justify-center border-2
+                        ${activeLink === 'experiencia' 
+                          ? getActiveLinkClasses(false) 
+                          : getInactiveLinkClasses(false)}
+                        `}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             animate={{ rotate: 0 }}
           >
@@ -161,26 +192,28 @@ const Navbar: React.FC = () => {
           <motion.a
             href="#proyectos"
             onClick={() => handleLinkClick('proyectos')}
-            className={`px-4 py-2 rounded-full flex items-center justify-center
-                        ${activeLink === 'proyectos'
-                          ? 'bg-[rgba(32,32,64,0.7)] text-white shadow-md border border-indigo-500'
-                          : 'text-gray-200 hover:bg-[rgba(48,48,80,0.6)] hover:text-white hover:shadow-md'
-                        }`}
-            whileHover={{ scale: 1.05, boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)" }}
+            className={`flex items-center justify-center border-2
+                        ${activeLink === 'proyectos' 
+                          ? getActiveLinkClasses(false) 
+                          : getInactiveLinkClasses(false)}
+                        `}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             animate={{ rotate: 0 }}
           >
             Proyectos
           </motion.a>
+
         </motion.div>
 
-        {/* Se elimina el Botón de Tema (Sol/Luna) */}
+        {/* Botón de Tema (Sol/Luna) para Desktop */}
         <motion.button
-          className="hidden md:flex p-2 rounded-full text-white hover:text-gray-300 transition-colors duration-200 focus:outline-none"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          onClick={toggleTheme}
+          className="hidden md:flex p-2 rounded-full text-current hover:text-gray-900 dark:hover:text-white transition-colors duration-200 focus:outline-none"
+          whileHover={{ scale: 1.1, backgroundColor: "transparent" }}
+          whileTap={{ scale: 0.9, backgroundColor: "transparent" }}
         >
-          <FiUser size={24} />
+          {currentTheme === 'dark' ? <FiSun size={24} /> : <FiMoon size={24} />} {/* Icono de sol/luna */}
         </motion.button>
       </div>
 
@@ -191,72 +224,73 @@ const Navbar: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className={`md:hidden absolute top-16 left-4 right-4 rounded-xl p-4 flex flex-col items-center space-y-4 shadow-lg z-40 transition-colors duration-300 bg-indigo-900/80 backdrop-filter backdrop-blur-lg`}> {/* Ancho extendido, con esquinas redondeadas, fondo semi-transparente */}
+          className={`md:hidden absolute top-16 left-6 right-6 rounded-xl p-4 flex flex-col items-center space-y-4 z-40 transition-colors duration-300 ${hasScrolled ? 'bg-white/30 dark:bg-gray-800/30 backdrop-filter backdrop-blur-lg shadow-lg' : 'bg-transparent'}`}>
           <motion.a
             href="#inicio"
-            onClick={() => { handleLinkClick('inicio'); setIsMobileMenuOpen(false); }}
-            className={`w-full text-center px-4 py-3 rounded-lg
-                        ${activeLink === 'inicio'
-                          ? 'bg-[rgba(32,32,64,0.7)] text-white shadow-md border border-indigo-500'
-                          : 'text-gray-200 hover:bg-[rgba(48,48,80,0.6)] hover:text-white hover:shadow-md'
-                        }`}
-            whileHover={{ scale: 1.05, boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)" }}
+            onClick={() => handleLinkClick('inicio')}
+            className={`w-full text-center px-4 py-3 rounded-lg border-2
+                        ${activeLink === 'inicio' 
+                          ? getActiveLinkClasses(true) 
+                          : getInactiveLinkClasses(true)}
+                        `}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             Inicio
           </motion.a>
           <motion.a
             href="#educacion"
-            onClick={() => { handleLinkClick('educacion'); setIsMobileMenuOpen(false); }}
-            className={`w-full text-center px-4 py-3 rounded-lg
-                        ${activeLink === 'educacion'
-                          ? 'bg-[rgba(32,32,64,0.7)] text-white shadow-md border border-indigo-500'
-                          : 'text-gray-200 hover:bg-[rgba(48,48,80,0.6)] hover:text-white hover:shadow-md'
-                        }`}
-            whileHover={{ scale: 1.05, boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)" }}
+            onClick={() => handleLinkClick('educacion')}
+            className={`w-full text-center px-4 py-3 rounded-lg border-2
+                        ${activeLink === 'educacion' 
+                          ? getActiveLinkClasses(true) 
+                          : getInactiveLinkClasses(true)}
+                        `}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             Educación
           </motion.a>
           <motion.a
             href="#competencia"
-            onClick={() => { handleLinkClick('competencia'); setIsMobileMenuOpen(false); }}
-            className={`w-full text-center px-4 py-3 rounded-lg
-                        ${activeLink === 'competencia'
-                          ? 'bg-[rgba(32,32,64,0.7)] text-white shadow-md border border-indigo-500'
-                          : 'text-gray-200 hover:bg-[rgba(48,48,80,0.6)] hover:text-white hover:shadow-md'
-                        }`}
-            whileHover={{ scale: 1.05, boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)" }}
+            onClick={() => handleLinkClick('competencia')}
+            className={`w-full text-center px-4 py-3 rounded-lg border-2
+                        ${activeLink === 'competencia' 
+                          ? getActiveLinkClasses(true) 
+                          : getInactiveLinkClasses(true)}
+                        `}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             Competencias
           </motion.a>
           <motion.a
             href="#experiencia"
-            onClick={() => { handleLinkClick('experiencia'); setIsMobileMenuOpen(false); }}
-            className={`w-full text-center px-4 py-3 rounded-lg
-                        ${activeLink === 'experiencia'
-                          ? 'bg-[rgba(32,32,64,0.7)] text-white shadow-md border border-indigo-500'
-                          : 'text-gray-200 hover:bg-[rgba(48,48,80,0.6)] hover:text-white hover:shadow-md'
-                        }`}
-            whileHover={{ scale: 1.05, boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)" }}
+            onClick={() => handleLinkClick('experiencia')}
+            className={`w-full text-center px-4 py-3 rounded-lg border-2
+                        ${activeLink === 'experiencia' 
+                          ? getActiveLinkClasses(true) 
+                          : getInactiveLinkClasses(true)}
+                        `}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             Experiencia
           </motion.a>
           <motion.a
             href="#proyectos"
-            onClick={() => { handleLinkClick('proyectos'); setIsMobileMenuOpen(false); }}
-            className={`w-full text-center px-4 py-3 rounded-lg
-                        ${activeLink === 'proyectos'
-                          ? 'bg-[rgba(32,32,64,0.7)] text-white shadow-md border border-indigo-500'
-                          : 'text-gray-200 hover:bg-[rgba(48,48,80,0.6)] hover:text-white hover:shadow-md'
-                        }`}
-            whileHover={{ scale: 1.05, boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)" }}
+            onClick={() => handleLinkClick('proyectos')}
+            className={`w-full text-center px-4 py-3 rounded-lg border-2
+                        ${activeLink === 'proyectos' 
+                          ? getActiveLinkClasses(true) 
+                          : getInactiveLinkClasses(true)}
+                        `}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             Proyectos
           </motion.a>
+           {/* Botón de Tema (Sol/Luna) para móvil - REMOVED */}
         </motion.div>
       )}
     </nav>

@@ -5,11 +5,15 @@ import TypingEffect from './TypingEffect'; // Importar el nuevo componente de ef
 
 import { motion } from 'framer-motion'; // Importar motion de framer-motion
 
-const Inicio: React.FC = () => {
+interface InicioProps {
+  currentTheme: string;
+}
+
+const Inicio: React.FC<InicioProps> = ({ currentTheme }) => {
   // Eliminado el estado y la función toggleTheme ya que ahora se maneja en Navbar
 
   return (
-    <section id="inicio" className="relative flex flex-col items-center justify-center text-white p-4 pt-16"> {/* Reducido pt-24 a pt-16 */}
+    <section id="inicio" className="relative flex flex-col items-center justify-center p-4 pt-16"> {/* Reducido pt-24 a pt-16 */}
       {/* Background elements (stars/patterns) - for illustration, these would typically be more complex CSS or SVG */}
       
       <div className="relative z-10 flex flex-col items-center">
@@ -30,35 +34,35 @@ const Inicio: React.FC = () => {
 
         {/* Status Badge - Eliminado */}
         {/* Main Content */}
-        <TypingEffect text="Hi, I'm  Dhilsen Mallqui" nameColor="text-blue-300" />
-        <p className="text-2xl md:text-3xl font-bold text-white mt-0 mb-6 text-center">FrontEnd Developer</p> {/* Ajustado mb */}
+        <TypingEffect textLine1="Hi, I'm Dhilsen" textLine2="Mallqui" currentTheme={currentTheme} />
+        <p className="text-2xl md:text-3xl font-bold text-current mt-0 mb-6 text-center">FrontEnd Developer</p> {/* Ajustado mb */}
         {/* Eliminado el párrafo: "Estudiante de Ingeniería de software..." */}
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row justify-center gap-4 w-full max-w-sm mx-auto mt-4"> {/* Ajustado mt */}
           <a
             href="#proyectos"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition duration-300 flex items-center justify-center group w-72 mx-auto" /* Cambiado a rounded-lg */
+            className="bg-emerald-600 dark:bg-emerald-800 hover:bg-emerald-700 dark:hover:bg-emerald-900 text-current font-semibold py-3 px-8 rounded-lg shadow-lg transition duration-300 flex items-center justify-center group w-72 mx-auto" /* Cambiado a rounded-lg y colores verdes */
           >
             Descargar CV <FiHardDrive className="ml-2 group-hover:translate-y-1 transition-transform duration-200" /> {/* Icono cambiado a FiHardDrive */}
           </a>
           <a
             href="#educacion" // Enlaza a la sección de educación
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition duration-300 flex items-center justify-center group w-60 mx-auto mt-4 sm:mt-0" /* Color cambiado a indigo-600 y redondeo a rounded-lg */
+            className="bg-emerald-600 dark:bg-emerald-800 hover:bg-emerald-700 dark:hover:bg-emerald-900 text-current font-semibold py-3 px-8 rounded-lg shadow-lg transition duration-300 flex items-center justify-center group w-60 mx-auto mt-4 sm:mt-0" /* Color cambiado a indigo-600 y redondeo a rounded-lg */
           >
             Conóceme <FiUser className="ml-2 group-hover:translate-y-1 transition-transform duration-200" /> {/* Texto e icono cambiados a Conóceme y FiUser */}
           </a>
         </div>
 
         {/* Social Icons */}
-        <div className="flex space-x-6 mt-8 mb-32 text-white"> {/* Ajustado mb para más separación */}
-          <a href="https://github.com/Dhilsen18" target="_blank" rel="noopener noreferrer" className="hover:text-blue-200 transition-colors duration-200">
+        <div className="flex space-x-6 mt-8 mb-32 text-current"> {/* Ajustado mb para más separación */}
+          <a href="https://github.com/Dhilsen18" target="_blank" rel="noopener noreferrer" className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200">
             <FaGithub size={30} />
           </a>
-          <a href="https://www.linkedin.com/in/dhilsenmallqui" target="_blank" rel="noopener noreferrer" className="hover:text-blue-200 transition-colors duration-200">
+          <a href="https://www.linkedin.com/in/dhilsenmallqui" target="_blank" rel="noopener noreferrer" className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200">
             <FaLinkedinIn size={30} />
           </a>
-          <a href="mailto:dhilsenamv@gmail.com" className="hover:text-blue-200 transition-colors duration-200">
+          <a href="mailto:dhilsenamv@gmail.com" className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200">
             <FaEnvelope size={30} />
           </a>
         </div>

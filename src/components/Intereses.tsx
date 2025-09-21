@@ -6,24 +6,31 @@ import L from 'leaflet'; // Importar la librería Leaflet para iconos personaliz
 import { GiSparkles } from 'react-icons/gi'; // Icono llamativo para el título
 import { FaTheaterMasks, FaPlaneDeparture, FaHandsHelping, FaTiktok } from 'react-icons/fa'; // Iconos profesionales para Danza, Viajar, Voluntariado y TikTok
 
-const Intereses: React.FC = () => {
+interface InteresesProps {
+  currentTheme: string;
+}
+
+const Intereses: React.FC<InteresesProps> = ({ currentTheme }) => {
   const dragContainerRef = useRef<HTMLDivElement>(null); // Ref para el contenedor de arrastre (se mantiene por si acaso, aunque ya no sea para dragConstraints directamente)
+
+  // Determinar el color del texto basado en el tema
+  const textColor = currentTheme === 'light' ? 'black' : 'white';
 
   // Convertir intereses a un array constante, eliminando useState y las propiedades initialX/Y
   const intereses = [
     { name: 'Juegos', emoji: '🎮' },
-    { name: 'Voluntariado', emoji: <FaHandsHelping className="text-green-400" /> },
+    { name: 'Voluntariado', emoji: <FaHandsHelping /> },
     { name: 'Fotografía', emoji: '📸' },
-    { name: 'Viajar', emoji: <FaPlaneDeparture className="text-blue-400" /> },
+    { name: 'Viajar', emoji: <FaPlaneDeparture /> },
     { name: 'Música', emoji: '🎵' },
-    { name: 'TikTok', emoji: <FaTiktok className="text-purple-400" /> },
-    { name: 'Danza', emoji: <FaTheaterMasks className="text-pink-400" /> },
+    { name: 'TikTok', emoji: <FaTiktok /> },
+    { name: 'Danza', emoji: <FaTheaterMasks /> },
     { name: 'Fitness', emoji: '🏋️' },
   ];
 
   // Crear un ícono Leaflet personalizado para tu emoji avatar
   const customIcon = L.divIcon({
-    html: `<div class="relative w-24 h-24 rounded-full flex items-center justify-center bg-white opacity-90 shadow-lg glow-effect"><img src="${import.meta.env.BASE_URL}images/emoji_avatar2.png" class="w-22 h-22 object-contain rounded-full" alt="Avatar"/></div>`, // Aumentado el tamaño del div a w-24 h-24 y la imagen a w-22 h-22
+    html: `<div class="relative w-24 h-24 rounded-full flex items-center justify-center ${currentTheme === 'light' ? 'bg-black' : 'bg-white'} opacity-90 shadow-lg"><img src="${import.meta.env.BASE_URL}images/emoji_avatar2.png" class="w-22 h-22 object-contain rounded-full" alt="Avatar"/></div>`, // Aumentado el tamaño del div a w-24 h-24 y la imagen a w-22 h-22
     className: 'custom-leaflet-icon',
     iconSize: [96, 96], // Ajustado el tamaño del icono para que coincida con el div
     iconAnchor: [48, 96], // Ajustado el ancla
@@ -34,33 +41,36 @@ const Intereses: React.FC = () => {
   const mapCenter: [number, number] = [-12.0710, -77.0490]; // Coordenadas para Cercado de Lima, cerca de Av. Brasil
 
   return (
-    <section id="intereses" className="py-8 bg-transparent text-white">
+    <section id="intereses" className="py-4 bg-transparent">
       <div className="container mx-auto px-4">
         {/* Removed the h2 title "Intereses y Hobbies" to match the image layout */}
-        <div className="max-w-screen-lg mx-auto grid grid-cols-1 md:grid-cols-3 gap-8"> {/* Changed to grid-cols-3 */}
+        <div className="max-w-screen-lg mx-auto grid grid-cols-1 md:grid-cols-3 gap-4"> {/* Changed to grid-cols-3 */}
           {/* Intereses Section */}
           <motion.div
-            className="relative rotating-border-light flex flex-col p-8 rounded-lg shadow-md bg-[rgba(20,20,70,0.8)] md:col-span-2" /* Fondo azul marino más oscuro y transparente */
+            className="relative flex flex-col p-8 rounded-lg shadow-md bg-white/30 dark:bg-gray-800/30 backdrop-filter backdrop-blur-lg md:col-span-2" /* Fondo azul marino más oscuro y transparente */
             initial={{ opacity: 1 }} // Aparecer visible de inmediato
+            whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 255, 255, 0.6)", transition: { duration: 0.2 } }} /* Animación de resaltado */
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
           >
-            <h3 className="text-2xl font-semibold text-white mb-4 flex items-center gap-2"> {/* Añadido flex items-center gap-2 */}
+            <h3 className="text-2xl font-semibold mb-4 flex items-center gap-2" style={{ color: textColor }}> {/* Añadido flex items-center gap-2 */}
               <GiSparkles className="text-yellow-300" /> Más Allá del Código
             </h3>
-            <p className="text-gray-300 mb-6">Explora mis intereses y pasatiempos más allá del ámbito digital.</p>
+            <p className="mb-6" style={{ color: textColor }}>Explora mis intereses y pasatiempos más allá del ámbito digital.</p>
             <div className="flex flex-wrap gap-3 relative" ref={dragContainerRef}> {/* Volver a flexbox, quitar altura fija */}
               {intereses.map((interes, index) => (
                 <motion.div
                   key={index}
-                  className="bg-gradient-to-br from-cyan-400/70 to-blue-500/70 text-white px-4 py-2 rounded-full text-md flex items-center gap-2 cursor-grab shadow-lg whitespace-nowrap" /* Ajustada la opacidad y colores a celeste */
-                  whileHover={{ scale: 1.05, boxShadow: "0 0 10px rgba(125,211,252,0.5)" }}
+                  className="px-4 py-2 rounded-full text-md flex items-center gap-2 cursor-grab whitespace-nowrap bg-white/10 dark:bg-gray-800/20"
+                  style={{ color: textColor }}
+                  whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
                   whileTap={{ scale: 0.95, cursor: "grabbing" }}
                   animate={{ y: [0, -5, 0] }} // Animación de arriba a abajo
                   transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }} // Transición suave con delay para escalonamiento
                   // Eliminadas propiedades de arrastre
                 >
-                  {interes.name} {interes.emoji}
+                  <span>{interes.name}</span>
+                  {interes.emoji}
                 </motion.div>
               ))}
             </div>
@@ -68,8 +78,9 @@ const Intereses: React.FC = () => {
 
           {/* Map Section */}
           <motion.div
-            className="relative rotating-border-light flex items-center justify-center rounded-lg shadow-md bg-[rgba(20,20,70,0.8)] h-96 md:col-span-1 md:h-full" /* Fondo azul marino más oscuro y transparente */
+            className="relative flex items-center justify-center rounded-lg shadow-md bg-white/30 dark:bg-gray-800/30 backdrop-filter backdrop-blur-lg h-96 md:col-span-1 md:h-full" /* Fondo azul marino más oscuro y transparente */
             initial={{ opacity: 1 }} // Aparecer visible de inmediato
+            whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(255, 255, 255, 0.6)", transition: { duration: 0.2 } }} /* Animación de resaltado */
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.6, type: "spring", stiffness: 100, delay: 0.1 }}
           >

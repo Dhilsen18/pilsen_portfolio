@@ -4,7 +4,11 @@ import { FiExternalLink } from 'react-icons/fi';
 import ImageGallery from './ImageGallery'; // Importar el nuevo componente
 import { motion } from 'framer-motion'; // Importar motion
 
-const Proyectos: React.FC = () => {
+interface ProyectosProps {
+  currentTheme: string;
+}
+
+const Proyectos: React.FC<ProyectosProps> = ({ currentTheme }) => {
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [currentProjectImages, setCurrentProjectImages] = useState<string[]>([]);
   const [initialGalleryIndex, setInitialGalleryIndex] = useState(0);
@@ -58,15 +62,18 @@ const Proyectos: React.FC = () => {
     },
   ];
 
+  // Determinar el color del texto basado en el tema
+  const textColor = currentTheme === 'light' ? 'black' : 'white';
+
   return (
-    <section id="proyectos" className="py-20 text-white">
+    <section id="proyectos" className="py-20">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center text-white mb-12">Proyectos</h2> {/* Título cambiado y centrado */}
+        <h2 className="text-4xl font-bold text-center mb-12" style={{ color: textColor }}>Proyectos</h2> {/* Título cambiado y centrado */}
         <div className="max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
           {projects.map((project, index) => (
             <motion.div
               key={project.id}
-              className="relative rotating-border-light flex items-center justify-center"
+              className="relative flex items-center justify-center"
               initial={{ opacity: 1 }} // Aparecer visible de inmediato
               whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(125,211,252,0.4)" }} /* Sutil resaltado para toda la tarjeta al pasar el cursor */
               transition={{ duration: 0.3, ease: "easeOut" }}
@@ -76,7 +83,7 @@ const Proyectos: React.FC = () => {
                 initial={{}} /* Asegura que no rote al inicio */
                 animate={{ y: [0, -5, 0] }} /* Animación de "flotación" sutil */
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }} /* Transición suave y continua */
-                className="relative z-10 p-8 rounded-lg shadow-xl w-full h-full flex flex-col items-center justify-center text-white bg-[rgba(20,20,70,0.8)]" /* Fondo azul marino más oscuro y transparente */
+                className="relative z-10 p-8 rounded-lg shadow-xl w-full h-full flex flex-col items-center justify-center bg-white/30 dark:bg-gray-800/30 backdrop-filter backdrop-blur-lg"
                 style={{ transform: 'none' }} /* Asegura que el contenido interno no rote */
               >
                 <motion.div /* Contenedor para la imagen con animación de hover */
@@ -92,15 +99,15 @@ const Proyectos: React.FC = () => {
                   />
                 </motion.div>
                 <div className="flex flex-col items-center text-center"> {/* Contenedor para título, descripción y botones */}
-                  <h3 className="text-2xl font-semibold text-white mb-3">{project.title}</h3>
-                  <p className="text-gray-300 text-sm mb-4 leading-relaxed">{project.description}</p>
+                  <h3 className="text-2xl font-semibold mb-3" style={{ color: textColor }}>{project.title}</h3>
+                  <p className="text-sm mb-4 leading-relaxed" style={{ color: textColor }}>{project.description}</p>
                   <div className="flex flex-wrap justify-center gap-2 mb-4">
                     {project.technologies.map((tech) => (
                       <motion.span
                         key={tech}
-                        whileHover={{ scale: 1.05, boxShadow: "0 0 10px rgba(125,211,252,0.5)" }} /* Resaltado al pasar el cursor */
+                        whileHover={{ scale: 1.05, transition: { duration: 0.2 } }} /* Sin resaltado de sombra */
                         transition={{ duration: 0.2 }}
-                        className="bg-gradient-to-br from-cyan-400/70 to-blue-500/70 text-white px-3 py-1 rounded-full text-sm cursor-pointer" /* Color y opacidad ajustados, añadido cursor-pointer */
+                        className="bg-indigo-600/20 dark:bg-indigo-800/20 backdrop-filter backdrop-blur-lg text-emerald-200 dark:text-emerald-500 px-3 py-1 rounded-lg text-sm cursor-pointer" /* Fondo sólido, texto blanco, redondeado */
                       >
                         {tech}
                       </motion.span>
@@ -111,7 +118,7 @@ const Proyectos: React.FC = () => {
                       href={project.codeLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center font-semibold text-white hover:text-gray-300 text-sm"
+                      className="flex items-center justify-center font-semibold text-sm" style={{ color: textColor }}
                     >
                       <FaGithub className="mr-2" /> Code
                     </a>
@@ -119,7 +126,7 @@ const Proyectos: React.FC = () => {
                       href={project.demoLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center font-semibold group text-white hover:text-gray-300 text-sm"
+                      className="flex items-center justify-center font-semibold group text-sm" style={{ color: textColor }}
                     >
                       Live Demo <FiExternalLink className="ml-2 group-hover:translate-x-1 transition-transform duration-200" />
                     </a>

@@ -1,120 +1,25 @@
 @import "tailwindcss";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Global styles for the body with animated background */
 body {
-  /* Modo oscuro por defecto (fondo azul oscuro degradado) */
-  background: linear-gradient(270deg, #0a0a2a, #1a1a4a, #0a0a2a, #1a1a4a, #0a0a2a); /* Degradado animado azul oscuro */
-  background-size: 800% 800%;
-  animation: gradientAnimation 15s ease infinite;
+  background-image: linear-gradient(to bottom, #E6F9EC, #85E3B8, #5DD39E); /* Fondo degradado modo claro */
   min-height: 100vh;
   height: 100%;
-  color: #ffffff; /* Texto blanco para fondo oscuro */
+  color: #000000;
+  background-attachment: fixed;
+
+  --progress-active-color: #3b82f6;   /* Azul combinable para modo claro */
+  --progress-inactive-color: #cbd5e1; /* Gris claro */
 }
 
-
-@keyframes gradientAnimation {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Animación del cursor de TypingEffect - más rápido */
-@keyframes blinkCursor {
-  0%, 75% { border-color: inherit; } /* Usar inherit para mantener el color del borde del texto */
-  76%, 100% { border-color: transparent; }
-}
-
-/* Partículas de Fondo Animadas */
-.animated-background-particles::before,
-.animated-background-particles::after {
-  content: '';
-  position: absolute;
-  background: rgba(173, 216, 230, 0.15); /* Azul claro semi-transparente para modo oscuro */
-  border-radius: 50%;
-  animation: floatParticles 20s infinite ease-in-out alternate;
-  z-index: -1;
-}
-
-.animated-background-particles::before {
-  width: 80px;
-  height: 80px;
-  top: 10%;
-  left: 15%;
-  animation-duration: 25s;
-  animation-delay: 2s;
-  opacity: 0.7;
-}
-
-.animated-background-particles::after {
-  width: 120px;
-  height: 120px;
-  top: 60%;
-  left: 80%;
-  animation-duration: 30s;
-  animation-delay: 5s;
-  opacity: 0.5;
-}
-
-
-@keyframes floatParticles {
-  0% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0.5;
-  }
-  25% {
-    transform: translate(10vw, 10vh) scale(1.1);
-    opacity: 0.6;
-  }
-  50% {
-    transform: translate(-5vw, 15vh) scale(0.9);
-    opacity: 0.4;
-  }
-  75% {
-    transform: translate(15vw, -5vh) scale(1.2);
-    opacity: 0.7;
-  }
-  100% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0.5;
-  }
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-.App {
-  height: 100%;
-  min-height: 100vh;
-}
-
-/* rotating-border-light (ahora solo modo oscuro) */
-.rotating-border-light::before {
-  content: '';
-  position: absolute;
-  inset: -1px; /* Ajusta el tamaño del borde */
-  border-radius: 12px; /* Coincide con el border-radius del contenedor */
-  background: linear-gradient(45deg, #ffffff, #f0f0f0, #e0e0e0, #f0f0f0, #ffffff); /* Degradado blanco */
-  background-size: 300% 300%;
-  animation: rotateBorderLight 4s linear infinite;
-  z-index: -1;
-  transition: box-shadow 0.3s ease-in-out; /* Transición para el box-shadow */
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6); /* Sombra inicial sutil */
-}
-
-.rotating-border-light:hover::before {
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.9); /* Sombra más pronunciada al hacer hover */
-}
-
-
-.rotating-border-light > * {
-  position: relative;
-  z-index: 10;
-  transform: rotate(0deg) !important;
+html.dark body {
+  background-image: linear-gradient(to bottom, #0B3D2E, #106D4D, #1F7A55); /* Fondo degradado modo oscuro */
+  color: #ffffff;
+  --progress-active-color: #22d3ee;   /* Azul turquesa para modo oscuro */
+  --progress-inactive-color: #4b5563; /* Gris oscuro */
 }
 
 /* Ocultar atribución de Leaflet */
@@ -125,4 +30,3 @@ code {
 .no-letter-spacing {
   letter-spacing: 0 !important;
 }
-    
