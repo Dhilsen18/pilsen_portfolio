@@ -66,7 +66,7 @@ const Educacion: React.FC<EducacionProps> = ({ className, currentTheme }) => {
                   <h3 className="text-2xl font-semibold mr-4" style={{ color: textColor }}>
                     {Array.isArray(entry.institution) ? (
                       entry.institution.map((part: string, index: number) => (
-                        <span key={index} className={index > 0 ? 'block' : ''}> {/* 'block' para forzar salto de línea */}
+                        <span key={index} className={index === 1 ? 'block md:inline' : index === 2 ? 'block' : ''}> {/* Control de salto de línea responsivo */}
                           {part}
                         </span>
                       ))
