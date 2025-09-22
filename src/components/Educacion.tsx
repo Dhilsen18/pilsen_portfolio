@@ -62,7 +62,7 @@ const Educacion: React.FC<EducacionProps> = ({ className, currentTheme }) => {
                 className="relative z-10 p-8 rounded-lg shadow-md w-full h-full flex flex-col justify-between bg-white/30 dark:bg-gray-800/30 backdrop-filter backdrop-blur-lg"
               style={{ transform: 'none' }} 
             >
-              <div className="relative flex items-start justify-between mb-4"> {/* Ajuste para flexbox, el icono a la derecha */}
+              <div className="relative flex items-start justify-between"> {/* Ajuste para flexbox, el icono a la derecha */}
                   <h3 className="text-2xl font-semibold mr-4" style={{ color: textColor }}>
                     {Array.isArray(entry.institution) ? (
                       entry.institution.map((part: string, index: number) => (
@@ -78,8 +78,8 @@ const Educacion: React.FC<EducacionProps> = ({ className, currentTheme }) => {
                     {entry.icon}
                   </div>
                 </div>
-                <p className="text-sm mb-1" style={{ color: textColor }}>{entry.period}</p>
-                <p className="mb-6" style={{ color: textColor }}>{entry.degree}</p>
+                 <p className="text-sm" style={{ color: textColor }}>{entry.period}</p>
+                <p className="mb-4" style={{ color: textColor }}>{entry.degree}</p>
               <div className="flex flex-nowrap justify-center gap-2 pt-4 border-t border-gray-700 overflow-x-auto"> 
                   {entry.skills.map((skill, skillIndex) => (
                 <motion.span
