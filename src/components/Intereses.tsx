@@ -84,9 +84,6 @@ const Intereses: React.FC<InteresesProps> = ({ currentTheme }) => {
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.6, type: "spring", stiffness: 100, delay: 0.1 }}
           >
-            <p style={{ color: 'red', zIndex: 1000, position: 'absolute', top: 10, left: 10 }}>
-                API Key: {import.meta.env.VITE_STADIAMAPS_API_KEY || 'UNDEFINED/EMPTY'}
-              </p>
             <MapContainer center={mapCenter} zoom={13} scrollWheelZoom={false} className="w-full h-full rounded-lg z-0 no-attribution"> {/* Añadido rounded-lg de nuevo aquí */}
               <TileLayer
                 attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
