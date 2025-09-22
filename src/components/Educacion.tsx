@@ -21,7 +21,7 @@ const Educacion: React.FC<EducacionProps> = ({ className, currentTheme }) => {
   const educationEntries: EducationEntry[] = [
     {
       id: 1,
-      institution: ['UPC - Universidad Peruana', 'de Ciencias Aplicadas'],
+      institution: ['UPC - Universidad', 'Peruana de', 'Ciencias Aplicadas'], // Dividido en tres partes para control de salto de línea en móvil
       period: 'Marzo 2023 – En curso (6to Ciclo)',
       degree: 'Ingeniería en Software',
       skills: ['Desarrollo de Software', 'Gestión de Proyectos'],
@@ -62,14 +62,11 @@ const Educacion: React.FC<EducacionProps> = ({ className, currentTheme }) => {
                 className="relative z-10 p-8 rounded-lg shadow-md w-full h-full flex flex-col justify-between bg-white/30 dark:bg-gray-800/30 backdrop-filter backdrop-blur-lg"
               style={{ transform: 'none' }} 
             >
-              <div className="relative"> 
-                  <div className="absolute top-0 right-0 p-2" style={{ color: textColor }}>
-                    {entry.icon}
-                  </div>
-                  <h3 className="text-2xl font-semibold mb-2" style={{ color: textColor }}>
+              <div className="relative flex items-start justify-between mb-4"> {/* Ajuste para flexbox, el icono a la derecha */}
+                  <h3 className="text-2xl font-semibold mr-4" style={{ color: textColor }}>
                     {Array.isArray(entry.institution) ? (
                       entry.institution.map((part: string, index: number) => (
-                        <span key={index} className={index > 0 ? 'block' : ''}> {/* 'block' para forzar salto de línea */} 
+                        <span key={index} className={index > 0 ? 'block' : ''}> {/* 'block' para forzar salto de línea */}
                           {part}
                         </span>
                       ))
@@ -77,16 +74,19 @@ const Educacion: React.FC<EducacionProps> = ({ className, currentTheme }) => {
                       <span>{entry.institution}</span>
                     )}
                   </h3>
-                  <p className="text-sm mb-1" style={{ color: textColor }}>{entry.period}</p>
-                  <p className="mb-6" style={{ color: textColor }}>{entry.degree}</p>
-              </div>
-              <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-700"> 
+                  <div className="p-2 flex-shrink-0" style={{ color: textColor }}> {/* Icono a la derecha y no se encoge */}
+                    {entry.icon}
+                  </div>
+                </div>
+                <p className="text-sm mb-1" style={{ color: textColor }}>{entry.period}</p>
+                <p className="mb-6" style={{ color: textColor }}>{entry.degree}</p>
+              <div className="flex flex-nowrap justify-center gap-2 pt-4 border-t border-gray-700 overflow-x-auto"> 
                   {entry.skills.map((skill, skillIndex) => (
                 <motion.span
                       key={skillIndex}
                       whileHover={{ scale: 1.05, boxShadow: "0 0 10px rgba(125,211,252,0.5)" }}
                       transition={{ duration: 0.2 }}
-                      className="bg-indigo-600/20 dark:bg-indigo-800/20 backdrop-filter backdrop-blur-lg text-emerald-200 dark:text-emerald-500 px-3 py-1 rounded-lg text-xs font-medium cursor-pointer"
+                      className="bg-indigo-600/20 dark:bg-indigo-800/20 backdrop-filter backdrop-blur-lg text-emerald-200 dark:text-emerald-500 px-3 py-1 rounded-lg text-xs font-medium cursor-pointer flex-shrink-0"
                     >
                       {skill}
                     </motion.span>
