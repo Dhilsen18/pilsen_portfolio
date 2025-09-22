@@ -62,7 +62,7 @@ const Educacion: React.FC<EducacionProps> = ({ className, currentTheme }) => {
                 className="relative z-10 p-8 rounded-lg shadow-md w-full h-full flex flex-col justify-between bg-white/30 dark:bg-gray-800/30 backdrop-filter backdrop-blur-lg"
               style={{ transform: 'none' }} 
             >
-              <div className="relative flex items-start justify-between"> {/* Ajuste para flexbox, el icono a la derecha */}
+              <div className="relative flex items-start justify-between mb-6"> {/* Ajuste para flexbox, el icono a la derecha */}
                   <h3 className="text-2xl font-semibold mr-4" style={{ color: textColor }}>
                     {Array.isArray(entry.institution) ? (
                       entry.institution.map((part: string, index: number) => (
