@@ -86,9 +86,8 @@ const Intereses: React.FC<InteresesProps> = ({ currentTheme }) => {
           >
             <MapContainer center={mapCenter} zoom={13} scrollWheelZoom={false} className="w-full h-full rounded-lg z-0 no-attribution"> {/* Añadido rounded-lg de nuevo aquí */}
               <TileLayer
-                attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png" // Usando el estilo outdoors de Stadia Maps para más color
-                
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               <Marker position={mapCenter} icon={customIcon}> {/* Usar el icono personalizado */}
                 <Popup>
